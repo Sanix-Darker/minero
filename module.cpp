@@ -1,5 +1,5 @@
 #include <boost/python.hpp>
-#include "minero.hpp"
+#include "./include/minero.h"
 
 BOOST_PYTHON_MODULE(minero)
 {

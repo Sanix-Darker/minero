@@ -19,12 +19,23 @@ file(GLOB
         headers
         *.hpp)
 
+# set(OBJS
+#         ${CMAKE_CURRENT_SOURCE_DIR}/minero.dir/SHA256.cpp.o
+# )
+
 target_include_directories(${PROJECT_NAME} PRIVATE ${Boost_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES} ${PYTHON_LIBRARIES} ${CONAN_LIBS})
 
 # To build an eecutable
-# add_executable(${PROJECT_NAME} opcv.cpp)
+# add_executable(${PROJECT_NAME} minero.cpp)
 target_link_libraries(${PROJECT_NAME} ${CONAN_LIBS})
 set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "")
+
+# set_source_files_properties(
+#   ${OBJS}
+#   PROPERTIES
+#   EXTERNAL_OBJECT true
+#   GENERATED true
+# )
 
 message("install ${Python_SITELIB}")
