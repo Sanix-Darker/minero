@@ -36,9 +36,15 @@ std::string COMPUTED_HASH;
  *     "nonce": 136557,
  *     "hash": "0000c486d8a306f6d51628266a85a8d8e20cf39ccd0f9f6e3aeb30718314c7d9"
  *   }
- * 
- * Example of a transaction Block
  */
+
+
+std::string operator*(const std::string& str, size_t times)
+{
+    std::stringstream stream;
+    for (size_t i = 0; i < times; i++) stream << str;
+    return stream.str();
+}
 
 
 bool endsWith(const std::string& str, const std::string& suffix)
@@ -57,48 +63,25 @@ bool startsWith(const std::string& str, const std::string& prefix)
 bool difficulty_compute(std::string value, int difficulty)
 {
 
-    if (difficulty > 0 && difficulty <= 5)
-        if (startsWith(value, "00"))
-            return true;
+    std::string magic_character = "0";
+    std::string should_start_with = magic_character * difficulty;
 
-    if (difficulty > 5 && difficulty <= 11)
-        if (startsWith(value, "000"))
-            return true;
-    
-    if (difficulty > 11 && difficulty <= 17)
-        if (startsWith(value, "0000"))
-            return true;
-
-    if (difficulty > 17 && difficulty <= 24)
-        if (startsWith(value, "000000"))
-            return true;
-
-    if (difficulty > 24 && difficulty <= 29)
-        if (startsWith(value, "0000000"))
-            return true;
-
-    if (difficulty > 29 && difficulty <= 40)
-        if (startsWith(value, "00000000"))
-            return true;
-
-    if (difficulty > 40)
-        if (startsWith(value, "0000000000"))
-            return true;
-
-    else
-        std::cout << "Please Specify the 'difficulty' between 0 and +infini" << std::endl;
+    if (startsWith(value, should_start_with))
+        return true;        
+    // else
+    //     std::cout << "Please Specify the 'difficulty' from 0 to +infini" << std::endl;
 
     return false;
  }
 
 
 /**
- * proof_of_work is the loop who try to generate the appropriate nonce for a valid hash from
+ * mine is the loop who try to generate the appropriate nonce for a valid hash from
  * difficulty and the string of the block
  * - string_block : the json_string of the block you want to hash (shoud be have a nonce parameter)
  * - hash_block : the hash of the block we want to check
  */ 
-std::string proof_of_work(std::string string_block, std::string nonce_attribute, int difficulty, bool debug)
+std::string mine(std::string string_block, std::string nonce_attribute, int difficulty, bool debug)
 {
     COMPUTED_HASH = compute_hash(string_block);
     auto string_block_to_get = json::parse(string_block);
@@ -107,7 +90,7 @@ std::string proof_of_work(std::string string_block, std::string nonce_attribute,
     if (debug)
     {
         std::cout << "[+] <-------------------------------------------------" << std::endl;
-        std::cout << "[+] <> proof_of_work \n[+] -> string_block: " << string_block << std::endl;
+        std::cout << "[+] <> mine \n[+] -> string_block: " << string_block << std::endl;
         std::cout << "[+] -> difficulty: " << difficulty << std::endl;
     }
     
@@ -127,7 +110,7 @@ std::string proof_of_work(std::string string_block, std::string nonce_attribute,
 
         if (debug)
         {
-            std::cout << "[+] -> COMPUTED_HASH: " << COMPUTED_HASH << std::endl;
+            std::cout << "[+] -> COMPUTED_HASH: " << COMPUTED_HASH << " | NONCE: " << NONCE << std::endl;
         }
     }
 
@@ -181,7 +164,7 @@ std::string compute_hash(std::string string_block, std::string secret_string, bo
 void help()
 {
     std::cout << "[+] <>----------------------------------------------" << std::endl;
-    std::cout << "[+] Welcome to Minero, a customizable C++ miner !" << std::endl;
+    std::cout << "[+] Welcome to Minero, a customizable C++ miner for your Blockchain !" << std::endl;
     std::cout << "[+] By S4nix-darker !" << std::endl;
     std::cout << "[+] <>----------------------------------------------" << std::endl;
 

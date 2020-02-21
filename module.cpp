@@ -5,5 +5,5 @@ BOOST_PYTHON_MODULE(minero)
 {
     using namespace boost::python;
     
-    def("proof_of_work", proof_of_work);
+    def("mine", mine);
 }

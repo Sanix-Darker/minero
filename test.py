@@ -1,5 +1,5 @@
 import json
-from minero import proof_of_work
+from minero import mine
 
 example_block =  "{\
      \"index\": 1,\
@@ -30,4 +30,4 @@ example_block =  "{\
 
 print(">> Bloc: ", json.loads(example_block))
 
-print(">> proof_of_work: ", proof_of_work(example_block, "nonce", 10, True))
+print(">> mine: ", mine(example_block, "nonce", 5, True))

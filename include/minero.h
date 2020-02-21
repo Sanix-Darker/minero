@@ -1,8 +1,7 @@
 #ifndef MINERO_H
 #define MINERO_H
 
-    #include <iostream>
-    #include <nlohmann/json.hpp>
+    #include "./include.h"
 
     // for convenience
     using json = nlohmann::json;
@@ -19,6 +18,6 @@
 
     extern bool is_valid_proof(std::string string_block, std::string hash_block, int difficulty=10);
 
-    extern std::string proof_of_work(std::string string_block, std::string nonce_attribute="nonce", int difficulty=10, bool debug=false);
+    extern std::string mine(std::string string_block, std::string nonce_attribute="nonce", int difficulty=10, bool debug=false);
 
 #endif // End of MINERO_H

@@ -7,12 +7,8 @@
     1048576  //=1024*1024: default is 1MB memory
 #endif
 
-#include <algorithm>
-#include <cassert>
-#include <iterator>
-#include <sstream>
-#include <vector>
-#include <fstream>
+#include "../include.h"
+
 namespace sha256 {
 
 typedef unsigned long word_t;
