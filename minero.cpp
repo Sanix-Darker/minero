@@ -1,21 +1,19 @@
 #include "./include/sha256/sha256.h"
 #include "./include/minero.h"
 
-void hello() {
-
-    std::string message = "hello world";
-    std::cout << hash_sha256(message) << std::endl;
-}
+int NONCE=0;
+bool PROOF_STATUS;
+std::string HASH;
+std::string COMPUTED_HASH;
 
 int main() {
-    hello();
     return 0;
 }
 
 /**
  * difficulty_compute decide the appropriate difficulty in a hash
  */ 
-bool difficulty_compute(std::string value, int difficulty=10)
+bool difficulty_compute(std::string value, int difficulty)
 {
     // if (
     //         (
@@ -55,51 +53,79 @@ bool difficulty_compute(std::string value, int difficulty=10)
 /**
  * proof_of_work is the loop who try to generate the appropriate nonce for a valid hash from
  * difficulty and the string of the block
+ * - string_block : the json_string of the block you want to hash
+ * - hash_block : the hash of the block we want to check
  */ 
-std::string proof_of_work(std::string string_block, int difficulty)
+std::string proof_of_work(std::string string_block, std::string nonce_attribute, int difficulty, bool debug)
 {
-    // block.nonce = 0
-    // # gradual_nonce = block.nonce
-    // # reverse_nonce_desc = 99999999999999999999999999999999999999999999999999999999999999
-    // computed_hash = block.compute_hash()
-    // while not self.difficulty_compute(computed_hash):
-    //     block.nonce += 1
-    //     computed_hash = block.compute_hash()
-    //     print(block.nonce, computed_hash)
-    //     # if not self.difficulty_compute(computed_hash):
-    //     #     gradual_nonce = block.nonce
-    //     #     reverse_nonce_desc -= 1
-    //     #     block.nonce = reverse_nonce_desc
-    //     #     computed_hash = block.compute_hash()
-    //     #     print("Nonce Tested:", block.nonce)
-    //     #     print("Hash generated:", computed_hash)
-    //     #     if not self.difficulty_compute(computed_hash):
-    //     #         block.nonce = gradual_nonce
-    // return computed_hash
+    COMPUTED_HASH = compute_hash(string_block);
+    if (debug)
+    {
+        std::cout << "[+] <-------------------------------------------------" << std::endl;
+        std::cout << "[+] <> proof_of_work \n[+] -> string_block: " << string_block << std::endl;
+        std::cout << "[+] -> difficulty: " << difficulty << std::endl;
+    }
+    
+    auto string_block_to_get = json::parse(string_block);
+    std::string new_string_block = "";
+    while (!difficulty_compute(COMPUTED_HASH, difficulty)) // in this loop we just check the validation of the computed hash
+    {
+        // We incremented the nonce
+        NONCE += 1;
+        
+        // We change the value in the json by the new nonce incremented
+        string_block_to_get[nonce_attribute] = NONCE;
+        
+        // We tranform the json to json_string
+        new_string_block = string_block_to_get.dump();
 
-    return "";
+        // We generate the computed-hash      
+        COMPUTED_HASH = compute_hash(new_string_block);
+
+        if (debug)
+        {
+            std::cout << "[+] -> COMPUTED_HASH: " << COMPUTED_HASH << std::endl;
+        }
+    }
+
+    return COMPUTED_HASH;
 }
 
 /**
  * is_valid_proof will validate the hash of a block from a specific difficulty
+ * - string_block : the string of the block you want to hash
+ * - hash_block : the hash of the block we want to check
+ * - difficulty :  the difficulty on the hashing process
+ * - debug : The debug parameter to print what's going on
  */
-bool is_valid_proof(std::string string_block, std::string hash_block, int difficulty=10)
+bool is_valid_proof(std::string string_block, std::string hash_block, int difficulty, bool debug)
 {
-    return (difficulty_compute(hash_block, difficulty) && hash_block == compute_hash(string_block));
+    PROOF_STATUS = (difficulty_compute(hash_block, difficulty) && hash_block == compute_hash(string_block));
+    if (debug)
+    {
+        std::cout << "[+] <-------------------------------------------------" << std::endl;
+        std::cout << "[+] <> is_valid_proof \n[+] -> string_block: " << string_block << std::endl;
+        std::cout << "[+] -> hash_block: " << hash_block << std::endl;
+        std::cout << "[+] -> difficulty: " << difficulty << std::endl;
+        std::cout << "[+] -> PROOF_STATUS: " << PROOF_STATUS << std::endl;
+    }
+    return PROOF_STATUS;
 }
 
 /**
  * compute_hash A function that return the hash of the block contents.
  * - string_block : the string of the block you want to hash
- * - secret_string : the default
+ * - secret_string : the secret string, you will pass each time to generate your personnalize hash
+ * - debug : The debug parameter to print what's going on
  */ 
-std::string compute_hash(std::string string_block, std::string secret_string="D3f4ult_s3cr3t-Str1nG", bool debug=false)
+std::string compute_hash(std::string string_block, std::string secret_string, bool debug)
 {
     // THis variable HASH have been declared in ./include/minero.h
     HASH = hash_sha256(string_block + "-" + secret_string);
     if (debug)
     {
-        std::cout << "[+] HASH:" << HASH << std::endl;
+        std::cout << "[+] <--------------------------------------------------" << std::endl;
+        std::cout << "[+] <> compute_hash \n[+] -> HASH: " << HASH << std::endl;
     }
     return HASH;
 }

@@ -4,5 +4,5 @@
 BOOST_PYTHON_MODULE(minero)
 {
     using namespace boost::python;
-    def("hello", hello);
+    def("compute_hash", compute_hash);
 }

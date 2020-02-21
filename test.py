@@ -1,3 +1,3 @@
-from minero import hello
+from minero import compute_hash
 
-hello()
+print(compute_hash("Message test", "badaboum", True))
