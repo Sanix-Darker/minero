@@ -15,7 +15,7 @@ int main() {
 /**
  * difficulty_compute decide the appropriate difficulty in a hash
  */ 
-bool difficulty_compute(std::string value, int difficulty)
+bool difficulty_compute(std::string value, int difficulty=10)
 {
     // if (
     //         (
@@ -83,19 +83,23 @@ std::string proof_of_work(std::string string_block, int difficulty)
 /**
  * is_valid_proof will validate the hash of a block from a specific difficulty
  */
-bool is_valid_proof(std::string string_block, std::string hash_block, int difficulty)
+bool is_valid_proof(std::string string_block, std::string hash_block, int difficulty=10)
 {
-    // return self.difficulty_compute(block_hash) and block_hash == block.compute_hash()
-    return true;
+    return (difficulty_compute(hash_block, difficulty) && hash_block == compute_hash(string_block));
 }
 
 /**
  * compute_hash A function that return the hash of the block contents.
  * - string_block : the string of the block you want to hash
- * - secret_string
+ * - secret_string : the default
  */ 
-std::string compute_hash(std::string string_block, std::string secret_string="D3f4ult_s3cr3t-Str1nG")
+std::string compute_hash(std::string string_block, std::string secret_string="D3f4ult_s3cr3t-Str1nG", bool debug=false)
 {
-    return "";
+    // THis variable HASH have been declared in ./include/minero.h
+    HASH = hash_sha256(string_block + "-" + secret_string);
+    if (debug)
+    {
+        std::cout << "[+] HASH:" << HASH << std::endl;
+    }
+    return HASH;
 }
-
