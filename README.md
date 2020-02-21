@@ -95,6 +95,7 @@ Sample content :
 
 ```txt
 [requires]
+nlohmann_json/3.7.3
 
 [generators]
 cmake
