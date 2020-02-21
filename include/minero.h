@@ -7,6 +7,11 @@
     // for convenience
     using json = nlohmann::json;
 
+    extern void help();
+
+    extern bool endsWith(const std::string& str, const std::string& suffix);
+
+    extern bool startsWith(const std::string& str, const std::string& prefix);
 
     extern bool difficulty_compute(std::string value, int difficulty=10);
 

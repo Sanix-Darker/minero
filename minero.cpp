@@ -6,8 +6,49 @@ bool PROOF_STATUS;
 std::string HASH;
 std::string COMPUTED_HASH;
 
-int main() {
-    return 0;
+/**
+ * Example of a Block :
+ *   {
+ *     "index": 1,
+ *     "transactions": [
+ *       {
+ *         "from": "string",
+ *         "to": "string",
+ *         "type": "string",
+ *         "content": "value",
+ *         "timestamp": 1582301090.8854582,
+ *         "tx_previous_hash": "99ae4e4b32f8b29fba5277e30180f3d75436b9756d1ec075f5aa5519aa15c9c0",
+ *         "tx_nonce": 183
+ *       },
+ *       {
+ *         "from": "string",
+ *         "to": "string",
+ *         "type": "string",
+ *         "content": "qqvalue",
+ *         "timestamp": 1582301834.1500485,
+ *         "tx_previous_hash": "9cfd783ddabdb228bd70357446c49ed2b2d98df0cf5d315f4eb69eb5d3148f40",
+ *         "tx_nonce": 20
+ *       },
+ *       .....
+ *     ],
+ *     "timestamp": 1582301860.202116,
+ *     "previous_hash": "19de66af7e186f2eeba3598e625548366237b7a99389de89f06a641ecf319e7e",
+ *     "nonce": 136557,
+ *     "hash": "0000c486d8a306f6d51628266a85a8d8e20cf39ccd0f9f6e3aeb30718314c7d9"
+ *   }
+ * 
+ * Example of a transaction Block
+ */
+
+
+bool endsWith(const std::string& str, const std::string& suffix)
+{
+    return str.size() >= suffix.size() && 0 == str.compare(str.size()-suffix.size(), suffix.size(), suffix);
+}
+
+bool startsWith(const std::string& str, const std::string& prefix)
+{
+    return str.size() >= prefix.size() && 0 == str.compare(0, prefix.size(), prefix);
 }
 
 /**
@@ -15,50 +56,54 @@ int main() {
  */ 
 bool difficulty_compute(std::string value, int difficulty)
 {
-    // if (
-    //         (
-    //                 ("b" in value or "a" in value or "r" in value or "o" in value or "n" in value)
-    //         )
-    //         and
-    //         (
-    //                 # ( "b" in value and "8" in value and "d" in value and "p" in value ) or
-    //                 # ( "a" in value and "4" in value ) or
-    //                 # ( "r" in value and "n" in value ) or
-    //                 # ( "o" in value and "0" in value and "k" in value and "d" in value ) or
-    //                 # ( "n" in value and "3" in value and "e" in value and "a" in value and "4" in value ) or
 
-    //                 all(x in value for x in self.hash_must_contain3_prime)
-    //                 # all(x in value for x in self.or1_hash_must_contain3_prime) or
-    //                 # all(x in value for x in self.or2_hash_must_contain3_prime) or
-    //                 # all(x in value for x in self.or3_hash_must_contain3_prime) or
-    //                 # all(x in value for x in self.or4_hash_must_contain3_prime) or
-    //                 # all(x in value for x in self.or5_hash_must_contain3_prime) or
-    //                 # all(x in value for x in self.or6_hash_must_contain3_prime) or
-    //                 # all(x in value for x in self.or7_hash_must_contain3_prime) or
-    //                 # all(x in value for x in self.or8_hash_must_contain3_prime) or
-    //                 # all(x in value for x in self.or9_hash_must_contain3_prime)
-    //         ) and
-    //         (
-    //                 value.startswith(self.START_CARACTER_DIFFICULTY * self.START_DIFFICULTY_OCCURENCE)
-    //                 # and value.endswith(self.END_CARACTER_DIFFICULTY * self.END_DIFFICULTY_OCCURENCE)
-    //         )
-    // ):
-    //     return True
-    // else:
-    //     return False
-    return true;
+    if (difficulty > 0 && difficulty <= 5)
+        if (startsWith(value, "00"))
+            return true;
+
+    if (difficulty > 5 && difficulty <= 11)
+        if (startsWith(value, "000"))
+            return true;
+    
+    if (difficulty > 11 && difficulty <= 17)
+        if (startsWith(value, "0000"))
+            return true;
+
+    if (difficulty > 17 && difficulty <= 24)
+        if (startsWith(value, "000000"))
+            return true;
+
+    if (difficulty > 24 && difficulty <= 29)
+        if (startsWith(value, "0000000"))
+            return true;
+
+    if (difficulty > 29 && difficulty <= 40)
+        if (startsWith(value, "00000000"))
+            return true;
+
+    if (difficulty > 40)
+        if (startsWith(value, "0000000000"))
+            return true;
+
+    else
+        std::cout << "Please Specify the 'difficulty' between 0 and +infini" << std::endl;
+
+    return false;
  }
 
 
 /**
  * proof_of_work is the loop who try to generate the appropriate nonce for a valid hash from
  * difficulty and the string of the block
- * - string_block : the json_string of the block you want to hash
+ * - string_block : the json_string of the block you want to hash (shoud be have a nonce parameter)
  * - hash_block : the hash of the block we want to check
  */ 
 std::string proof_of_work(std::string string_block, std::string nonce_attribute, int difficulty, bool debug)
 {
     COMPUTED_HASH = compute_hash(string_block);
+    auto string_block_to_get = json::parse(string_block);
+    std::string new_string_block = "";
+
     if (debug)
     {
         std::cout << "[+] <-------------------------------------------------" << std::endl;
@@ -66,11 +111,9 @@ std::string proof_of_work(std::string string_block, std::string nonce_attribute,
         std::cout << "[+] -> difficulty: " << difficulty << std::endl;
     }
     
-    auto string_block_to_get = json::parse(string_block);
-    std::string new_string_block = "";
     while (!difficulty_compute(COMPUTED_HASH, difficulty)) // in this loop we just check the validation of the computed hash
     {
-        // We incremented the nonce
+        // We incremented the nonce until we had a good nonce for a valid hash
         NONCE += 1;
         
         // We change the value in the json by the new nonce incremented
@@ -88,7 +131,12 @@ std::string proof_of_work(std::string string_block, std::string nonce_attribute,
         }
     }
 
-    return COMPUTED_HASH;
+    std::string result = "{";
+    result +=               "\"hash\" : \""+COMPUTED_HASH+"\",";
+    result +=               "\"nonce\": "+std::to_string(NONCE);
+    result +=           "}";
+
+    return result;
 }
 
 /**
@@ -128,4 +176,19 @@ std::string compute_hash(std::string string_block, std::string secret_string, bo
         std::cout << "[+] <> compute_hash \n[+] -> HASH: " << HASH << std::endl;
     }
     return HASH;
+}
+
+void help()
+{
+    std::cout << "[+] <>----------------------------------------------" << std::endl;
+    std::cout << "[+] Welcome to Minero, a customizable C++ miner !" << std::endl;
+    std::cout << "[+] By S4nix-darker !" << std::endl;
+    std::cout << "[+] <>----------------------------------------------" << std::endl;
+
+}
+
+int main() {
+
+    help();
+    return 0;
 }

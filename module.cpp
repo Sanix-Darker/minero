@@ -4,5 +4,6 @@
 BOOST_PYTHON_MODULE(minero)
 {
     using namespace boost::python;
-    def("compute_hash", compute_hash);
+    
+    def("proof_of_work", proof_of_work);
 }
