@@ -1,6 +1,9 @@
+<img src="./images/logo.png"/>
+
 # MINERO
 
 Meet Minero, a customizable C++ miner for your personnal Blockchain !
+
 The minning process was too long in python, so i implemented this lib in C++ using sha256 !
 
 ## Requirements
@@ -180,16 +183,13 @@ pip3 install ./dist/*
 In the Cpp sour-code we have : 
 
 ```c++
-#include <iostream>
-#include "minero.hpp" 
+#include "minero.h" 
 
-void help(std::string strr)
+void help()
 {
     std::cout << "Working Fine!" << std::endl;
     std::cout << "You said : " << strr;
 }
-.
-.
 .
 ```
 
@@ -201,7 +201,6 @@ print(help())
 ```
 
 Or just run `python3 test.py` to test it your self.
-
 
 ## EXTRAS
 
