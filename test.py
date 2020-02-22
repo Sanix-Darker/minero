@@ -30,4 +30,4 @@ example_block =  "{\
 
 print(">> Bloc: ", json.loads(example_block))
 
-print(">> mine: ", mine(example_block, "nonce", 5, True))
+print(mine(example_block, "nonce", 10, "0", True))

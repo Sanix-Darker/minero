@@ -60,10 +60,8 @@ bool startsWith(const std::string& str, const std::string& prefix)
 /**
  * difficulty_compute decide the appropriate difficulty in a hash
  */ 
-bool difficulty_compute(std::string value, int difficulty)
+bool difficulty_compute(std::string value, int difficulty, std::string magic_character)
 {
-
-    std::string magic_character = "0";
     std::string should_start_with = magic_character * difficulty;
 
     if (startsWith(value, should_start_with))
@@ -80,8 +78,9 @@ bool difficulty_compute(std::string value, int difficulty)
  * difficulty and the string of the block
  * - string_block : the json_string of the block you want to hash (shoud be have a nonce parameter)
  * - hash_block : the hash of the block we want to check
- */ 
-std::string mine(std::string string_block, std::string nonce_attribute, int difficulty, bool debug)
+ * - magic_character is the starter character
+ */
+std::string mine(std::string string_block, std::string nonce_attribute, int difficulty, std::string magic_character, bool debug)
 {
     COMPUTED_HASH = compute_hash(string_block);
     auto string_block_to_get = json::parse(string_block);
@@ -94,7 +93,7 @@ std::string mine(std::string string_block, std::string nonce_attribute, int diff
         std::cout << "[+] -> difficulty: " << difficulty << std::endl;
     }
     
-    while (!difficulty_compute(COMPUTED_HASH, difficulty)) // in this loop we just check the validation of the computed hash
+    while (!difficulty_compute(COMPUTED_HASH, difficulty, magic_character)) // in this loop we just check the validation of the computed hash
     {
         // We incremented the nonce until we had a good nonce for a valid hash
         NONCE += 1;
@@ -110,14 +109,14 @@ std::string mine(std::string string_block, std::string nonce_attribute, int diff
 
         if (debug)
         {
-            std::cout << "[+] -> COMPUTED_HASH: " << COMPUTED_HASH << " | NONCE: " << NONCE << std::endl;
+            std::cout << "[+] -> " << COMPUTED_HASH << " | " << NONCE << std::endl;
         }
     }
 
     std::string result = "{";
     result +=               "\"hash\" : \""+COMPUTED_HASH+"\",";
     result +=               "\"nonce\": "+std::to_string(NONCE);
-    result +=           "}";
+    result +=            "}";
 
     return result;
 }
@@ -129,15 +128,16 @@ std::string mine(std::string string_block, std::string nonce_attribute, int diff
  * - difficulty :  the difficulty on the hashing process
  * - debug : The debug parameter to print what's going on
  */
-bool is_valid_proof(std::string string_block, std::string hash_block, int difficulty, bool debug)
+bool is_valid_proof(std::string string_block, std::string hash_block, int difficulty, std::string magic_character, bool debug)
 {
-    PROOF_STATUS = (difficulty_compute(hash_block, difficulty) && hash_block == compute_hash(string_block));
+    PROOF_STATUS = (difficulty_compute(hash_block, difficulty, magic_character) && hash_block == compute_hash(string_block));
     if (debug)
     {
         std::cout << "[+] <-------------------------------------------------" << std::endl;
         std::cout << "[+] <> is_valid_proof \n[+] -> string_block: " << string_block << std::endl;
         std::cout << "[+] -> hash_block: " << hash_block << std::endl;
         std::cout << "[+] -> difficulty: " << difficulty << std::endl;
+        std::cout << "[+] -> magic_character: " << magic_character << std::endl;
         std::cout << "[+] -> PROOF_STATUS: " << PROOF_STATUS << std::endl;
     }
     return PROOF_STATUS;
@@ -163,10 +163,10 @@ std::string compute_hash(std::string string_block, std::string secret_string, bo
 
 void help()
 {
-    std::cout << "[+] <>----------------------------------------------" << std::endl;
+    std::cout << "[+] <>---------------------------------------------------------------" << std::endl;
     std::cout << "[+] Welcome to Minero, a customizable C++ miner for your Blockchain !" << std::endl;
     std::cout << "[+] By S4nix-darker !" << std::endl;
-    std::cout << "[+] <>----------------------------------------------" << std::endl;
+    std::cout << "[+] <>---------------------------------------------------------------" << std::endl;
 
 }
 
